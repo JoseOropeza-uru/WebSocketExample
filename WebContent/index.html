@@ -5,43 +5,50 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<input type="text" id="message" /> 
+	<input type="text" id="message" />
 	<button onclick="sendMessage()">SEND</button>
-	
+	<button onclick='connect()'>Connect</button>
+	<button onclick='closeWs()'>Disconnect</button>
+
 	<h3>MESSAGES:</h3>
 	<div id="inbox"></div>
 
 	<script>
-		
 		function $(id) {
 			return document.getElementById(id);
 		};
-
-		var ws = new WebSocket("ws://"+location.host+"/WebSocketExample/chat");
-
-		ws.onmessage = function (e) {
-			$("inbox").textContent +='\n' + e.data;
-		};
-
-		ws.onopen = function (e) {
-			$("inbox").textContent = '\n Conection Success';
-		};
-
-		ws.onclose = function (e) {
-			$("inbox").textContent = '\n Connection Finished';
-		};
-
-		ws.onerror = function (e) {
-			$("inbox").textContent = e.data;
-		};
+		var ws;
 
 		function sendMessage() {
 			var text = $("message").value;
 			ws.send(text);
-		}
-		window.onunload = ()=>{
-            ws.onclose();
-        }
+		};
+		function closeWs() {
+			ws.close();
+		};
+		function connect() {
+			ws = new WebSocket("ws://" + location.host
+					+ "/WebSocketExample/chat");
+			ws.onmessage = function(e) {
+				console.log(JSON.parse(e.data));
+				$("inbox").textContent += '\n' + JSON.parse(e.data).msg;
+			};
+
+			ws.onopen = function(e) {
+				$("inbox").textContent = '\n Conection Success';
+			};
+
+			ws.onclose = function(e) {
+				if (ws.readyState === WebSocket.OPEN) {
+					$("inbox").textContent = '\n Connection Finished';
+					ws.close();
+				}
+			};
+			ws.onerror = function(e) {
+				$("inbox").textContent += '\n' +e.data;
+			};
+
+		};
 	</script>
 </body>
 </html>
