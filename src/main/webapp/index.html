@@ -28,7 +28,7 @@
 		};
 		function connect() {
 			ws = new WebSocket("ws://" + location.host
-					+ "/WebSocketExample/chat");
+					+ "/websocket/chat");
 			ws.onmessage = function(e) {
 				console.log(JSON.parse(e.data));
 				$("inbox").textContent += '\n' + JSON.parse(e.data).msg;
